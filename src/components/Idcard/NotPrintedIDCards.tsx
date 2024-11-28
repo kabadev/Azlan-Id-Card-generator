@@ -45,7 +45,7 @@ export function NotPrintedIDCards({
     currentPage,
     isLoading,
     fetchNotPrintedRiders,
-    fetchRiders,
+
     setCurrentPage,
   } = useRiderContext();
   useEffect(() => {

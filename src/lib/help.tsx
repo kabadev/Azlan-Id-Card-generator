@@ -131,7 +131,7 @@ export const generateCardFront = async (rider: any) => {
         const x = 60; // X coordinate
         const y = 250; // Y coordinate
         const width = 300; // Width of the bounding box
-        const height = 300; // Height of the bounding box
+        const height = 350; // Height of the bounding box
         const borderRadius = 20; // Radius for rounded corners
 
         // Calculate the scaling and positioning to simulate "object-fit: cover"

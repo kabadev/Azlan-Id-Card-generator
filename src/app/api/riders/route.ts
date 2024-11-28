@@ -53,7 +53,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Error creating user" });
   }
 }
-
 export async function PUT(request: NextRequest) {
   try {
     const { id, firstName, lastName, email, role } = await request.json();
@@ -112,8 +111,16 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get("page") || "1");
   const limit = parseInt(searchParams.get("limit") || "200");
   const search = searchParams.get("search") || "";
+  // Determine the value of isPrinted
+  const isPrintedParam = searchParams.get("isPrinted");
 
-  const isPrinted = searchParams.get("isPrinted") === "true" ? true : false;
+  const isPrinted =
+    isPrintedParam === "true"
+      ? true
+      : isPrintedParam === "false"
+      ? false
+      : undefined;
+
   const skip = (page - 1) * limit;
 
   try {
@@ -130,7 +137,11 @@ export async function GET(request: Request) {
         }
       : {};
 
-    const riders = await Rider.find({ isPrinted: isPrinted })
+    const getquery: any = {};
+    if (isPrinted !== undefined) {
+      getquery.isPrinted = isPrinted;
+    }
+    const riders = await Rider.find(getquery)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });

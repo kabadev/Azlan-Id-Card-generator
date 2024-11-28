@@ -17,14 +17,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PrintedIDCards } from "@/components/Idcard/PrintedIDCards";
 import { NotPrintedIDCards } from "@/components/Idcard/NotPrintedIDCards";
 import { Rider } from "@/types/idcard-type";
+import { useRiderContext } from "@/context/riderContext";
+import { useRouter } from "next/navigation";
 
 export default function IDCardPage() {
+  const { updatePrintedRiders } = useRiderContext();
   const [tab, setTab] = React.useState("notprinted");
   const [singleBatchTab, setSingleBatchTab] = React.useState("batch");
   const [issaving, setIssaving] = React.useState(false);
   const [isPrinting, setIsPrinting] = React.useState(false);
   const [childData, setChildData] = React.useState<Rider[]>([]);
-
+  const router = useRouter();
   const handleSaveBatch = async () => {
     setIssaving(true);
     const idCards = await Promise.all(
@@ -42,9 +45,15 @@ export default function IDCardPage() {
       })
     );
 
-    await saveBatchIDCards(idCards);
-
-    setIssaving(false);
+    try {
+      await saveBatchIDCards(idCards);
+      updatePrintedRiders(childData);
+      router.refresh();
+      setIsPrinting(false);
+    } catch (error) {
+      console.log(error);
+    }
+    setIsPrinting(false);
   };
 
   const handlePrintBatch = async () => {
@@ -63,7 +72,15 @@ export default function IDCardPage() {
         return rider.type === "General" ? general : executive;
       })
     );
-    await printBatchIDCards(idCards);
+
+    try {
+      await updatePrintedRiders(childData);
+      await printBatchIDCards(idCards);
+      router.refresh();
+      setIsPrinting(false);
+    } catch (error) {
+      console.log(error);
+    }
     setIsPrinting(false);
   };
 

@@ -1,4 +1,5 @@
 "use client";
+import { extractIds } from "@/lib/utils";
 import { Rider } from "@/types/idcard-type";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
@@ -22,6 +23,7 @@ interface RiderContextState {
   fetchRiders: () => void;
   fetchPrintedRiders: () => void;
   fetchNotPrintedRiders: () => void;
+  updatePrintedRiders: (riders: any) => void;
 
   totalRiders: number;
   totalFetchedRiders: number;
@@ -110,6 +112,7 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
         )}&limit=200&isPrinted=false`
       );
       const data = await response.data;
+      console.log(data);
       setNotPrintedRiders((prevRiders) => {
         const newRiders = [...prevRiders, ...data.riders];
         const uniqueRiders = newRiders.filter(
@@ -119,6 +122,7 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
         setTotalFetchedRiders(uniqueRiders.length);
         return uniqueRiders;
       });
+
       setTotalRiders(data.total);
     } catch (error) {
       console.error("Error fetching riders:", error);
@@ -146,6 +150,15 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
   const deleteRider = (id: string) => {
     setRiders((prevRiders) => prevRiders.filter((rider) => rider.id !== id));
   };
+  const updatePrintedRiders = async (riders: any) => {
+    try {
+      const riderIds = extractIds(riders);
+      await axios.put("/api/riders/updateRidersPrinted", { riderIds });
+      fetchNotPrintedRiders();
+    } catch (error) {
+      console.log("Failed to update riders printed. Error:", error);
+    }
+  };
 
   return (
     <RiderContext.Provider
@@ -161,6 +174,7 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
         fetchRiders,
         fetchPrintedRiders,
         fetchNotPrintedRiders,
+        updatePrintedRiders,
         setCurrentPage,
         setSearchQuery,
         addRider,

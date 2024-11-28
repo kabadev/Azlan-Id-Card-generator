@@ -1,6 +1,8 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import {
   BarChart,
   PieChart,
@@ -15,23 +17,38 @@ import {
 } from "recharts";
 
 const districtData = [
-  { name: "Freetown", bikeRiders: 1200 },
-  { name: "Bo", bikeRiders: 800 },
-  { name: "Kenema", bikeRiders: 600 },
-  { name: "Makeni", bikeRiders: 500 },
-  { name: "Koidu", bikeRiders: 400 },
+  { name: "Freetown", bikeRiders: 0 },
+  { name: "Bo", bikeRiders: 0 },
+  { name: "Kenema", bikeRiders: 0 },
+  { name: "Makeni", bikeRiders: 0 },
+  { name: "Koidu", bikeRiders: 0 },
 ];
 
 const ageRangeData = [
-  { name: "18-25", value: 30 },
-  { name: "26-35", value: 45 },
-  { name: "36-45", value: 20 },
-  { name: "46+", value: 5 },
+  { name: "18-25", value: 0 },
+  { name: "26-35", value: 0 },
+  { name: "36-45", value: 0 },
+  { name: "46+", value: 0 },
 ];
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 export default function Dashboard() {
+  const [dasboardData, setDasboardData] = useState<any>({});
+
+  const fetchDasboardData = async () => {
+    try {
+      const res = await axios.get("/api/dashboard");
+      setDasboardData(res.data);
+    } catch (error) {
+      console.log("console");
+    }
+  };
+
+  useEffect(() => {
+    fetchDasboardData();
+  }, []);
+
   return (
     <div className="p-8 pb-10 h-[calc(100vh-70px)] overflow-y-auto">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
@@ -44,7 +61,10 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3,500</div>
+            <div className="text-2xl font-bold">
+              {" "}
+              {dasboardData ? dasboardData.totalRiders : 0}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -54,7 +74,9 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2,800</div>
+            <div className="text-2xl font-bold">
+              {dasboardData ? dasboardData.printedCards : 0}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -64,7 +86,9 @@ export default function Dashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">700</div>
+            <div className="text-2xl font-bold">
+              {dasboardData ? dasboardData.pendingPrinting : "500,000"}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -72,7 +96,10 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4,200</div>
+            <div className="text-2xl font-bold">
+              {" "}
+              {dasboardData ? dasboardData.totalUsers : 0}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -84,7 +111,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={districtData}>
+              <BarChart data={dasboardData?.ridersByDistrict}>
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
@@ -103,7 +130,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={ageRangeData}
+                  data={dasboardData?.ageRangeDistribution}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -114,12 +141,14 @@ export default function Dashboard() {
                     `${name} ${(percent * 100).toFixed(0)}%`
                   }
                 >
-                  {ageRangeData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
+                  {dasboardData?.ageRangeDistribution?.map(
+                    (entry: any, index: any) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    )
+                  )}
                 </Pie>
                 <Tooltip />
                 <Legend />

@@ -26,6 +26,8 @@ import {
   saveSingleIDCard,
 } from "@/lib/help";
 import EditRiderForm from "./IdCardEditForm";
+import { useRiderContext } from "@/context/riderContext";
+import { useRouter } from "next/navigation";
 
 export default function IdCardDetail({ rider }: { rider: any }) {
   const [issaving, setIssaving] = React.useState(false);
@@ -35,7 +37,8 @@ export default function IdCardDetail({ rider }: { rider: any }) {
   const [cardBack, setCardBack] = React.useState<any>("");
   const [pcardFront, setPCardFront] = React.useState<any>("");
   const [pcardBack, setPCardBack] = React.useState<any>("");
-
+  const { updatePrintedRiders } = useRiderContext();
+  const router = useRouter();
   const CloseRiderEditForm = () => {
     setIsEditing(false);
   };
@@ -81,6 +84,18 @@ export default function IdCardDetail({ rider }: { rider: any }) {
         rider.type
       );
     }
+
+    if (!rider.isPrinted) {
+      try {
+        await updatePrintedRiders([rider]);
+        setIssaving(false);
+        router.refresh();
+      } catch (error) {
+        setIssaving(false);
+        console.log(error);
+      }
+    }
+
     setIssaving(false);
   };
 
@@ -108,7 +123,16 @@ export default function IdCardDetail({ rider }: { rider: any }) {
         rider.type
       );
     }
-
+    if (rider.isPrinted === false) {
+      try {
+        await updatePrintedRiders([rider]);
+        router.refresh();
+        setIsPrinting(false);
+      } catch (error) {
+        setIsPrinting(false);
+        console.log(error);
+      }
+    }
     setIsPrinting(false);
   };
 

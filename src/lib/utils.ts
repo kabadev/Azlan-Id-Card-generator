@@ -29,3 +29,7 @@ export const generateNextId = async (): Promise<string> => {
     .padStart(numberPart.length, "0");
   return `${prefix}${newNumberPart}`;
 };
+
+export function extractIds(riders: any) {
+  return riders.map((rider: any) => rider._id);
+}
