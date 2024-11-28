@@ -1,4 +1,5 @@
 "use client";
+import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import React from "react";
 
@@ -13,15 +14,10 @@ const Navbar = () => {
           height={100}
           className="h-12 w-12 object-contain"
         />
-        <h2 className="font-semibold text-lg">Azlan ID Card Generator</h2>
+        <h2 className="font-semibold text-lg">Azlan ID Card</h2>
       </div>
-      <Image
-        src={"/keita.png"}
-        alt="logo"
-        width={100}
-        height={100}
-        className="h-12 w-12 rounded-full border object-contain cursor-pointer"
-      />
+
+      <UserButton />
     </header>
   );
 };

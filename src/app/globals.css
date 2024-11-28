@@ -74,3 +74,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.cl-internal-df7v37 {
+  display: none !important;
+}

@@ -1,9 +1,6 @@
-"use client";
-
-import * as React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
-
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,14 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import IdCardDetail from "@/components/Idcard/IdCardDetail";
 import { useRiderContext } from "@/context/riderContext";
 import { Rider } from "@/types/idcard-type";
 
-export default function IDCardPage() {
+export function PrintedIDCards() {
   const {
-    riders,
+    printedRiders,
     totalRiders,
     totalFetchedRiders,
     currentPage,
@@ -30,9 +26,16 @@ export default function IDCardPage() {
     fetchRiders,
     setCurrentPage,
     setSearchQuery,
+    fetchPrintedRiders,
   } = useRiderContext();
 
-  const [selectedRider, setSelectedRider] = React.useState(riders[0] || null);
+  useEffect(() => {
+    fetchPrintedRiders();
+  }, [fetchPrintedRiders]);
+
+  const [selectedRider, setSelectedRider] = React.useState(
+    printedRiders[0] || null
+  );
   const [filteredRiders, setFilteredRiders] = React.useState<Rider[]>([]);
 
   const pageSize = 50;
@@ -46,13 +49,13 @@ export default function IDCardPage() {
   }, [filteredRiders, currentPage]);
 
   React.useEffect(() => {
-    if (riders.length > 0 && !selectedRider) {
-      setSelectedRider(riders[0]);
+    if (printedRiders.length > 0 && !selectedRider) {
+      setSelectedRider(printedRiders[0]);
     }
-  }, [riders, selectedRider]);
+  }, [printedRiders, selectedRider]);
 
   React.useEffect(() => {
-    const filtered = riders.filter(
+    const filtered = printedRiders.filter(
       (rider) =>
         rider.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         rider.surName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -61,26 +64,23 @@ export default function IDCardPage() {
         rider.id.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredRiders(filtered);
-  }, [riders, searchQuery]);
+  }, [printedRiders, searchQuery]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Left side - Student List */}
-      <div className="w-1/3 border-r bg-white h-[calc(100vh-70px)] relative ">
-        <div className="h-[60px] flex items-center p-2 w-full">
+    <div className="w-full flex p-0  ">
+      <div className="w-1/3 border-r bg-white h-[calc(100vh-120px)] mt-[40px] relative">
+        <div className=" h-[60px] flex items-center p-2 w-full ">
           <div className="relative w-full">
-            <div className="relative flex-grow">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search students..."
-                className="pl-8 w-full"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search students..."
+              className="pl-8 w-full"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
         </div>
-        <div className="overflow-auto absolute w-full h-[calc(100%-140px)] overflow-y-auto">
+        <div className="overflow-auto absolute w-full h-[calc(100%-140px)] overflow-y-auto ">
           <Table>
             <TableHeader>
               <TableRow className="p-0">
@@ -100,11 +100,11 @@ export default function IDCardPage() {
                   onClick={() => setSelectedRider(rider)}
                 >
                   <TableCell>
-                    <Image
+                    <img
                       alt="photo"
                       src={rider.photo || "/profile.png"}
-                      width={32}
-                      height={32}
+                      width={100}
+                      height={100}
                       className="w-8 h-8 rounded-md"
                     />
                   </TableCell>
@@ -146,8 +146,7 @@ export default function IDCardPage() {
         </div>
       </div>
 
-      {/* Right side - Student Details and ID Card */}
-      <div className="flex-1 p-6 h-[calc(100vh-70px)] overflow-y-auto bg-background">
+      <div className="w-1/2 flex-1 p-6 h-[calc(100vh-120px)] mt-[40px] overflow-y-auto">
         {selectedRider && <IdCardDetail rider={selectedRider} />}
       </div>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useUserContext } from "@/context/userContext";
+import { User } from "@/types/user";
 
 const lawyerFormSchema = z.object({
   firstName: z
@@ -30,35 +31,54 @@ const lawyerFormSchema = z.object({
   role: z.string().min(2, { message: " user role is required" }),
 });
 
-const AddUser = () => {
-  const [addLawyerModalOpen, setAddLawyerModalOpen] = useState(false);
-  const { addUser, isSubmiting } = useUserContext();
+const EditUser = ({
+  userData,
+  isOpen,
+  onClose,
+}: {
+  userData: User;
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
+  const { updateUser, isSubmiting } = useUserContext();
   const form = useForm<z.infer<typeof lawyerFormSchema>>({
     resolver: zodResolver(lawyerFormSchema),
+    defaultValues: {
+      email: userData.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      role: userData.role,
+    },
   });
 
   const onSubmit = async (data: z.infer<typeof lawyerFormSchema>) => {
+    const newdata = {
+      id: userData.id,
+      email: data.email,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      role: data.role,
+    };
     try {
-      await addUser(data);
-      setAddLawyerModalOpen(false);
+      await updateUser(newdata);
+      onClose();
       form.reset();
     } catch (error) {
-      console.error("Error adding user:", error);
+      console.error("Error updating user:", error);
     }
   };
 
   return (
     <div>
-      <Button onClick={() => setAddLawyerModalOpen(true)}>Add New User</Button>
-      <Sheet open={addLawyerModalOpen} onOpenChange={setAddLawyerModalOpen}>
+      <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent
           side="right"
           className="w-[400px] sm:w-[50%]"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <SheetHeader>
-            <SheetTitle>Add New user</SheetTitle>
-            <SheetDescription>Add a new user to the system.</SheetDescription>
+            <SheetTitle>Update user</SheetTitle>
+            <SheetDescription>Update user to the system.</SheetDescription>
           </SheetHeader>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -111,15 +131,11 @@ const AddUser = () => {
               </div>
             </ScrollArea>
             <div className="flex justify-end space-x-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setAddLawyerModalOpen(false)}
-              >
+              <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmiting}>
-                {isSubmiting ? "Adding..." : "Add user"}
+                {isSubmiting ? "Updating..." : "Update user"}
               </Button>
             </div>
           </form>
@@ -129,4 +145,4 @@ const AddUser = () => {
   );
 };
 
-export default AddUser;
+export default EditUser;

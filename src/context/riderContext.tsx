@@ -1,81 +1,138 @@
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
-export interface Rider {
-  id: string;
-  surname: string;
-  firstName: string;
-  middleName?: string;
-  sex: string;
-  district: string;
-  city: string;
-  dateOfBirth: string;
-  park: string;
-  RIN: string;
-  photo: string;
-}
+import { Rider } from "@/types/idcard-type";
+import { useUser } from "@clerk/nextjs";
+import axios from "axios";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+  useEffect,
+} from "react";
 
 // Context State Type
 interface RiderContextState {
   riders: Rider[];
+  notPrintedRiders: Rider[];
+  printedRiders: Rider[];
   addRider: (newRider: Rider) => void;
   updateRider: (updatedRider: Rider) => void;
   deleteRider: (id: string) => void;
+  fetchRiders: () => void;
+  fetchPrintedRiders: () => void;
+  fetchNotPrintedRiders: () => void;
+
+  totalRiders: number;
+  totalFetchedRiders: number;
+  currentPage: number;
+  isLoading: boolean;
+  searchQuery: string;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }
 
-// Create the Context
 const RiderContext = createContext<RiderContextState | undefined>(undefined);
-
-// Initial Riders (Mock Data)
-const initialRiders: Rider[] = [
-  {
-    id: "CBR-KA-001",
-    surname: "Sangare",
-    firstName: "Mariama",
-    middleName: "",
-    sex: "Female",
-    district: "Koinadugu",
-    city: "Kabala",
-    dateOfBirth: "1990-05-10",
-    park: "Kabala Central",
-    RIN: "RIN001",
-    photo: "/profile.png",
-  },
-  {
-    id: "CBR-KA-002",
-    surname: "Kamara",
-    firstName: "Abu",
-    middleName: "Khalifa",
-    sex: "Male",
-    district: "Koinadugu",
-    city: "Kabala",
-    dateOfBirth: "1993-08-15",
-    park: "Kabala Central",
-    RIN: "RIN002",
-    photo: "/moba.jpg",
-  },
-  {
-    id: "CBR-BO-001",
-    surname: "Jalloh",
-    firstName: "Abdul",
-    middleName: "Rahman",
-    sex: "Male",
-    district: "Bo",
-    city: "Bo City",
-    dateOfBirth: "1992-11-05",
-    park: "Bo Central",
-    RIN: "RIN003",
-    photo: "isatu.jpg",
-  },
-];
 
 // Provider Component
 export const RiderProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [riders, setRiders] = useState<Rider[]>(initialRiders);
+  const { isSignedIn, user, isLoaded } = useUser();
+  const [riders, setRiders] = useState<Rider[]>([]);
+  const [notPrintedRiders, setNotPrintedRiders] = useState<Rider[]>([]);
+  const [printedRiders, setPrintedRiders] = useState<Rider[]>([]);
+  const [isSubmiting, setISubmiting] = useState<boolean>(false);
+  const [totalRiders, setTotalRiders] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [totalFetchedRiders, setTotalFetchedRiders] = useState(0);
 
-  const addRider = (newRider: any) => {
-    setRiders((prevRiders) => [...prevRiders, newRider]);
+  const fetchRiders = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `/api/riders?page=${Math.ceil(currentPage / 4)}&limit=200`
+      );
+      const data = await response.data;
+      setRiders((prevRiders) => {
+        const newRiders = [...prevRiders, ...data.riders];
+        const uniqueRiders = newRiders.filter(
+          (rider, index, self) =>
+            index === self.findIndex((t) => t.id === rider.id)
+        );
+        setTotalFetchedRiders(uniqueRiders.length);
+        return uniqueRiders;
+      });
+      setTotalRiders(data.total);
+    } catch (error) {
+      console.error("Error fetching riders:", error);
+    }
+    setIsLoading(false);
+  }, [currentPage]);
+
+  useEffect(() => {
+    fetchRiders();
+  }, [fetchRiders]);
+
+  const fetchPrintedRiders = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `/api/riders?page=${Math.ceil(
+          currentPage / 4
+        )}&limit=200&isPrinted=true`
+      );
+      const data = await response.data;
+      setPrintedRiders((prevRiders) => {
+        const newRiders = [...prevRiders, ...data.riders];
+        const uniqueRiders = newRiders.filter(
+          (rider, index, self) =>
+            index === self.findIndex((t) => t.id === rider.id)
+        );
+        setTotalFetchedRiders(uniqueRiders.length);
+        return uniqueRiders;
+      });
+      setTotalRiders(data.total);
+    } catch (error) {
+      console.error("Error fetching riders:", error);
+    }
+    setIsLoading(false);
+  }, [currentPage]);
+
+  const fetchNotPrintedRiders = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `/api/riders?page=${Math.ceil(
+          currentPage / 4
+        )}&limit=200&isPrinted=false`
+      );
+      const data = await response.data;
+      setNotPrintedRiders((prevRiders) => {
+        const newRiders = [...prevRiders, ...data.riders];
+        const uniqueRiders = newRiders.filter(
+          (rider, index, self) =>
+            index === self.findIndex((t) => t.id === rider.id)
+        );
+        setTotalFetchedRiders(uniqueRiders.length);
+        return uniqueRiders;
+      });
+      setTotalRiders(data.total);
+    } catch (error) {
+      console.error("Error fetching riders:", error);
+    }
+    setIsLoading(false);
+  }, [currentPage]);
+
+  const addRider = async (newRider: any) => {
+    try {
+      await axios.post("/api/riders", newRider);
+      fetchRiders();
+    } catch (error) {
+      console.log("Fail to add rider", error);
+    }
   };
 
   const updateRider = (updatedRider: Rider) => {
@@ -92,7 +149,24 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <RiderContext.Provider
-      value={{ riders, addRider, updateRider, deleteRider }}
+      value={{
+        riders,
+        printedRiders,
+        notPrintedRiders,
+        totalRiders,
+        currentPage,
+        isLoading,
+        searchQuery,
+        totalFetchedRiders,
+        fetchRiders,
+        fetchPrintedRiders,
+        fetchNotPrintedRiders,
+        setCurrentPage,
+        setSearchQuery,
+        addRider,
+        updateRider,
+        deleteRider,
+      }}
     >
       {children}
     </RiderContext.Provider>
