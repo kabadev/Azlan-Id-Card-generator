@@ -28,31 +28,38 @@ import {
 import EditRiderForm from "./IdCardEditForm";
 import { useRiderContext } from "@/context/riderContext";
 import { useRouter } from "next/navigation";
+import ImageEditor from "../ImageEditor";
+import { DeleteRiderModal } from "./IdCardDelete";
 
-export default function IdCardDetail({ rider }: { rider: any }) {
+export default function IdCardDetail({
+  rider,
+  setSelectedRider,
+}: {
+  rider: any;
+  setSelectedRider: React.Dispatch<React.SetStateAction<any>>;
+}) {
   const [issaving, setIssaving] = React.useState(false);
   const [isPrinting, setIsPrinting] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [isPhotoEdit, setIsPhotoEdit] = React.useState(false);
+  const [deleteShow, setDeleteShow] = React.useState(false);
   const [cardFront, setCardFront] = React.useState<any>("");
-  const [cardBack, setCardBack] = React.useState<any>("");
   const [pcardFront, setPCardFront] = React.useState<any>("");
-  const [pcardBack, setPCardBack] = React.useState<any>("");
   const { updatePrintedRiders } = useRiderContext();
   const router = useRouter();
   const CloseRiderEditForm = () => {
     setIsEditing(false);
   };
+  const CloseRiderEditPhoto = () => {
+    setIsPhotoEdit(false);
+  };
 
   const fetchCard = async () => {
     const frontP: any = await generateExCardFront(rider);
-    const backP: any = await generateExCardBack(rider);
 
     const front: any = await generateCardFront(rider);
-    const back: any = await generateCardBack(rider);
     setCardFront(front);
-    setCardBack(back);
     setPCardFront(frontP);
-    setPCardBack(backP);
   };
 
   React.useEffect(() => {
@@ -138,42 +145,46 @@ export default function IdCardDetail({ rider }: { rider: any }) {
 
   return (
     <div className="space-y-6">
-      {isEditing ? (
-        <EditRiderForm onCloseForm={CloseRiderEditForm} rider={rider} />
+      {deleteShow && (
+        <DeleteRiderModal
+          rider={rider}
+          deleteShow={deleteShow}
+          setDeleteShow={setDeleteShow}
+          setSelectedRider={setSelectedRider}
+        />
+      )}
+      {isPhotoEdit ? (
+        <ImageEditor
+          setSelectedRider={setSelectedRider}
+          onCloseEditPhoto={CloseRiderEditPhoto}
+          rider={rider}
+        />
+      ) : isEditing ? (
+        <EditRiderForm
+          setSelectedRider={setSelectedRider}
+          onCloseForm={CloseRiderEditForm}
+          rider={rider}
+        />
       ) : (
         <>
           <div>
-            <div className="flex gap-4 w-full relative ">
+            <div className="flex items-center justify-center gap-4 w-full relative ">
               <Image
                 height={500}
                 width={500}
-                className=" w-1/2 rounded-md shadow-lg"
+                className=" w-2/4 rounded-md shadow-lg"
                 src={cardFront ? cardFront : "/frontbg.png"}
-                alt=""
-              />
-              <Image
-                height={500}
-                width={500}
-                className=" w-1/2 rounded-md shadow-lg"
-                src={cardBack ? cardBack : "/backbg.png"}
                 alt=""
               />
             </div>
 
             {rider.type === "Executive" && (
-              <div className="flex gap-4 w-full relative mt-4 ">
+              <div className="flex  items-center justify-center gap-4 w-full relative mt-4 ">
                 <Image
                   height={500}
                   width={500}
                   className=" w-1/2 rounded-md shadow-lg"
                   src={pcardFront ? pcardFront : "/frontbg.png"}
-                  alt=""
-                />
-                <Image
-                  height={500}
-                  width={500}
-                  className=" w-1/2 rounded-md shadow-lg"
-                  src={pcardBack ? pcardBack : "/backbg.png"}
                   alt=""
                 />
               </div>
@@ -214,11 +225,15 @@ export default function IdCardDetail({ rider }: { rider: any }) {
                         <span>Edit</span>
                         <DropdownMenuShortcut>⇧⌘E</DropdownMenuShortcut>
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">
-                        <Trash />
-                        <span>Delete</span>
-                        <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={() => setIsPhotoEdit(true)}
+                      >
+                        <Edit />
+                        <span>Edit Photo</span>
+                        <DropdownMenuShortcut>⇧⌘E</DropdownMenuShortcut>
                       </DropdownMenuItem>
+
                       <DropdownMenuItem
                         className="cursor-pointer"
                         onClick={handleSaveSingle}
@@ -234,6 +249,14 @@ export default function IdCardDetail({ rider }: { rider: any }) {
                         <Printer />
                         <span>{isPrinting ? "Printing.." : " Print"}</span>
                         <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setDeleteShow(true)}
+                        className="cursor-pointer"
+                      >
+                        <Trash />
+                        <span>Delete</span>
+                        <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
@@ -273,13 +296,13 @@ export default function IdCardDetail({ rider }: { rider: any }) {
                 <p className="font-medium">{rider.sex}</p>
               </div>
               {/* <div>
-      <p className="text-sm text-gray-500">Email</p>
-      <p className="font-medium">{rider.email}</p>
-    </div>
-    <div>
-      <p className="text-sm text-gray-500">Address</p>
-      <p className="font-medium">{rider.address}</p>
-    </div> */}
+    <p className="text-sm text-gray-500">Email</p>
+    <p className="font-medium">{rider.email}</p>
+  </div>
+  <div>
+    <p className="text-sm text-gray-500">Address</p>
+    <p className="font-medium">{rider.address}</p>
+  </div> */}
             </div>
             <div className=" mt-8 flex md:hidden items-center justify-end">
               <div className="space-x-2">

@@ -46,7 +46,7 @@ export function PrintedIDCards() {
       (currentPage - 1) * pageSize,
       currentPage * pageSize
     );
-  }, [filteredRiders, currentPage]);
+  }, [printedRiders, filteredRiders, currentPage]);
 
   React.useEffect(() => {
     if (printedRiders.length > 0 && !selectedRider) {
@@ -116,6 +116,17 @@ export function PrintedIDCards() {
               ))}
             </TableBody>
           </Table>
+          {isLoading &&
+            [1, 2, 3, 4, 5, 6, 7].map((_, i) => (
+              <div key={i} className="flex items-center space-x-4 border-b p-2">
+                <div className="w-[40px] h-[40px] rounded-sm bg-accent animate-pulse"></div>
+                <div className="flex-1 flex flex-col gap-2">
+                  <p className="bg-accent h-3 w-[200px] animate-pulse rounded-full"></p>
+                  <p className="bg-accent h-2 w-[100px] animate-pulse rounded-full"></p>
+                </div>
+                <div className="bg-accent h-3 w-[100px] animate-pulse rounded-full"></div>
+              </div>
+            ))}
         </div>
         <div className="absolute w-full h-[80px] bottom-0 mt-4 flex items-center justify-between p-4">
           <Button
@@ -147,7 +158,12 @@ export function PrintedIDCards() {
       </div>
 
       <div className="w-1/2 flex-1 p-6 h-[calc(100vh-120px)] mt-[40px] overflow-y-auto">
-        {selectedRider && <IdCardDetail rider={selectedRider} />}
+        {selectedRider && (
+          <IdCardDetail
+            setSelectedRider={setSelectedRider}
+            rider={selectedRider}
+          />
+        )}
       </div>
     </div>
   );

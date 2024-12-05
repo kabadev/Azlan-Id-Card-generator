@@ -33,3 +33,4 @@ export const generateNextId = async (): Promise<string> => {
 export function extractIds(riders: any) {
   return riders.map((rider: any) => rider._id);
 }
+

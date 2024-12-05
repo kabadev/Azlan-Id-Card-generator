@@ -8,17 +8,15 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const LoginPage = () => {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user } = useUser();
 
   const router = useRouter();
 
   useEffect(() => {
-    const role = user?.publicMetadata.role;
-
-    if (role) {
-      router.push(`/${role}`);
+    if (user) {
+      router.push(`/`);
     }
-  }, [user, router]);
+  }, [user]);
 
   return (
     <div className="h-screen flex items-center justify-center p-4 ">

@@ -148,7 +148,12 @@ export default function IDCardPage() {
 
       {/* Right side - Student Details and ID Card */}
       <div className="flex-1 p-6 h-[calc(100vh-70px)] overflow-y-auto bg-background">
-        {selectedRider && <IdCardDetail rider={selectedRider} />}
+        {selectedRider && (
+          <IdCardDetail
+            setSelectedRider={setSelectedRider}
+            rider={selectedRider}
+          />
+        )}
       </div>
     </div>
   );

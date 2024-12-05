@@ -230,6 +230,7 @@ export const generateCardBack = async (student: any) => {
   });
   return canvas.toDataURL("image/png");
 };
+
 export const generateExCardFront = async (rider: any) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -459,14 +460,14 @@ export const saveSingleIDCard = async (
 
   // Add the front image to the first page
   pdf.addImage(frontImage!, "PNG", 0, 0, 1400, 880);
-  pdf.addPage();
-  pdf.addImage(backImage, "PNG", 0, 0, 1400, 880);
+  // pdf.addPage();
+  // pdf.addImage(backImage, "PNG", 0, 0, 1400, 880);
 
   if (type !== "General") {
     pdf.addPage([880, 1400], "p");
     pdf.addImage(frontPImage!, "PNG", 0, 0, 880, 1400);
-    pdf.addPage([880, 1400], "p");
-    pdf.addImage(backPmage!, "PNG", 0, 0, 880, 1400);
+    // pdf.addPage([880, 1400], "p");
+    // pdf.addImage(backPmage!, "PNG", 0, 0, 880, 1400);
   }
   // Save the PDF
   pdf.save(name + "ID_Card.pdf");
@@ -488,14 +489,14 @@ export const printSingleIDCard = async (
 
   // Add the front image to the first page
   pdf.addImage(frontImage!, "PNG", 0, 0, 1400, 880);
-  pdf.addPage();
-  pdf.addImage(backImage, "PNG", 0, 0, 1400, 880);
+  // pdf.addPage();
+  // pdf.addImage(backImage, "PNG", 0, 0, 1400, 880);
 
   if (type !== "General") {
     pdf.addPage([880, 1400], "p");
     pdf.addImage(frontPImage!, "PNG", 0, 0, 880, 1400);
-    pdf.addPage([880, 1400], "p");
-    pdf.addImage(backPmage!, "PNG", 0, 0, 880, 1400);
+    // pdf.addPage([880, 1400], "p");
+    // pdf.addImage(backPmage!, "PNG", 0, 0, 880, 1400);
   }
 
   // Open PDF in a new tab and trigger print
@@ -532,14 +533,14 @@ export const saveBatchIDCards = async (
     if (card.type === "Executive") {
       pdf.addPage([880, 1400], "portrait");
       pdf.addImage(card.frontP!, "PNG", 0, 0, 880, 1400);
-      pdf.addPage([880, 1400], "portrait");
-      pdf.addImage(card.backP!, "PNG", 0, 0, 880, 1400);
+      // pdf.addPage([880, 1400], "portrait");
+      // pdf.addImage(card.backP!, "PNG", 0, 0, 880, 1400);
     }
     pdf.addPage([1400, 880], "landscape");
     pdf.addImage(card.front, "PNG", 0, 0, 1400, 880);
 
-    pdf.addPage([1400, 880], "landscape");
-    pdf.addImage(card.back, "PNG", 0, 0, 1400, 880);
+    // pdf.addPage([1400, 880], "landscape");
+    // pdf.addImage(card.back, "PNG", 0, 0, 1400, 880);
   });
   if (pdf.getNumberOfPages() > 0) {
     pdf.deletePage(1);
@@ -566,14 +567,14 @@ export const printBatchIDCards = async (
     if (card.type === "Executive") {
       pdf.addPage([880, 1400], "portrait");
       pdf.addImage(card.frontP!, "PNG", 0, 0, 880, 1400);
-      pdf.addPage([880, 1400], "portrait");
-      pdf.addImage(card.backP!, "PNG", 0, 0, 880, 1400);
+      // pdf.addPage([880, 1400], "portrait");
+      // pdf.addImage(card.backP!, "PNG", 0, 0, 880, 1400);
     }
     pdf.addPage([1400, 880], "landscape");
     pdf.addImage(card.front, "PNG", 0, 0, 1400, 880);
 
-    pdf.addPage([1400, 880], "landscape");
-    pdf.addImage(card.back, "PNG", 0, 0, 1400, 880);
+    // pdf.addPage([1400, 880], "landscape");
+    // pdf.addImage(card.back, "PNG", 0, 0, 1400, 880);
   });
   if (pdf.getNumberOfPages() > 0) {
     pdf.deletePage(1);

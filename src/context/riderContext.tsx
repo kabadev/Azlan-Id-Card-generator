@@ -139,17 +139,16 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const updateRider = (updatedRider: Rider) => {
-    setRiders((prevRiders) =>
-      prevRiders.map((rider) =>
-        rider.id === updatedRider.id ? updatedRider : rider
-      )
-    );
+  const updateRider = async (updatedRider: Rider) => {
+    await axios.put("/api/riders", updatedRider);
+    // fetchRidersData();
   };
 
-  const deleteRider = (id: string) => {
-    setRiders((prevRiders) => prevRiders.filter((rider) => rider.id !== id));
+  const deleteRider = async (id: string) => {
+    await axios.delete("/api/riders?id=" + id);
+    fetchNotPrintedRiders();
   };
+
   const updatePrintedRiders = async (riders: any) => {
     try {
       const riderIds = extractIds(riders);
