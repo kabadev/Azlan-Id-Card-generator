@@ -253,7 +253,7 @@ export function NotPrintedIDCards({
                     height={500}
                     width={500}
                     className=" w-1/2 rounded-md shadow-lg"
-                    src={cardFronts[index] ? cardFronts[index] : "/frontbg.png"}
+                    src={cardFronts[index] ? cardFronts[index] : "/loader.png"}
                     alt=""
                   />
                 </div>
@@ -265,7 +265,7 @@ export function NotPrintedIDCards({
                     height={500}
                     width={500}
                     className=" w-1/2 rounded-md shadow-lg"
-                    src={cardFronts[index] ? cardFronts[index] : "/frontbg.png"}
+                    src={cardFronts[index] ? cardFronts[index] : "/loader.png"}
                     alt=""
                   />
                   <Image
@@ -273,7 +273,7 @@ export function NotPrintedIDCards({
                     width={500}
                     className=" w-1/2 rounded-md shadow-lg"
                     src={
-                      pcardFronts[index] ? pcardFronts[index] : "/frontbg.png"
+                      pcardFronts[index] ? pcardFronts[index] : "/loader.png"
                     }
                     alt=""
                   />

@@ -115,6 +115,7 @@ export default function EditRiderForm({
         park: data.park,
         userId: user?.id,
         type: data.type,
+        designation: data.designation,
       };
       if (rider.photo !== imagePreview) {
         const photoUploaded = await uploadToCloudinary();

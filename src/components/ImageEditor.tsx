@@ -293,6 +293,7 @@ const ImageEditor = ({
           });
           setSaving(false);
           setShowCrop(false);
+          window.location.reload();
           // const link = document.createElement("a");
           // link.download = "image_edit.jpg";
           // link.href = canvas.toDataURL("image/png");

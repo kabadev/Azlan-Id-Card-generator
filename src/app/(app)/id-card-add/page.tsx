@@ -142,6 +142,7 @@ export default function AddRiderForm() {
         imageId: photoUploaded.publicId,
         userId: user?.id,
         type: data.type,
+        designation: data.designation,
       };
 
       await addRider(newRiderData);
@@ -373,7 +374,7 @@ export default function AddRiderForm() {
                 height={500}
                 width={500}
                 className=" w-1/2 rounded-md shadow-lg"
-                src={cardFront ? cardFront : "/frontbg.png"}
+                src={cardFront ? cardFront : "/loader.png"}
                 alt=""
               />
               <img

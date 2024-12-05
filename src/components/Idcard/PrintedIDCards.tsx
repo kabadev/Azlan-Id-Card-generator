@@ -105,7 +105,7 @@ export function PrintedIDCards() {
                       src={rider.photo || "/profile.png"}
                       width={100}
                       height={100}
-                      className="w-8 h-8 rounded-md"
+                      className="w-8 h-8 rounded-md object-cover object-top"
                     />
                   </TableCell>
                   <TableCell>{rider.id}</TableCell>

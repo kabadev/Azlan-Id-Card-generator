@@ -87,7 +87,7 @@ export const generateCardFront = async (rider: any) => {
   // Dir
 
   ctx.fillStyle = "black";
-  ctx.font = "bold 40px Arial";
+  ctx.font = "bold 30px Arial";
   ctx.fillText(rider?.district?.toUpperCase(), 405, 840);
 
   // park
@@ -287,7 +287,7 @@ export const generateExCardFront = async (rider: any) => {
 
   ctx.fillStyle = "black";
   ctx.font = "bold 30px Arial";
-  ctx.fillText(rider?.district?.toUpperCase(), 35, 1130);
+  ctx.fillText(rider?.designation?.toUpperCase(), 35, 1130);
 
   // park
   // ctx.fillStyle = "black";
@@ -388,8 +388,8 @@ export const generateExCardFront = async (rider: any) => {
     const watermarkHeight = 160;
 
     // Calculate the center of the watermark
-    const centerX = 1200 + watermarkWidth / 2;
-    const centerY = 220 + watermarkHeight / 2;
+    const centerX = 60 + watermarkWidth / 2;
+    const centerY = 420 + watermarkHeight / 2;
     const radius = watermarkWidth / 2;
 
     // Begin a new path and create a circle
@@ -401,7 +401,7 @@ export const generateExCardFront = async (rider: any) => {
     ctx.clip();
 
     // Draw the watermark within the circular clip
-    ctx.drawImage(photo, 1200, 220, watermarkWidth, watermarkHeight);
+    ctx.drawImage(photo, 60, 420, watermarkWidth, watermarkHeight);
 
     ctx.globalAlpha = 1.0;
   }
@@ -455,17 +455,27 @@ export const saveSingleIDCard = async (
   const pdf = new jsPDF({
     orientation: "landscape",
     unit: "px",
-    format: [1400, 880],
+    format: [3.375, 2.125],
   });
 
   // Add the front image to the first page
-  pdf.addImage(frontImage!, "PNG", 0, 0, 1400, 880);
+  pdf.addImage(frontImage!, "PNG", 0, 0, 3.375, 2.125);
   // pdf.addPage();
   // pdf.addImage(backImage, "PNG", 0, 0, 1400, 880);
 
   if (type !== "General") {
-    pdf.addPage([880, 1400], "p");
-    pdf.addImage(frontPImage!, "PNG", 0, 0, 880, 1400);
+    pdf.addPage([3.375, 2.125], "l");
+    pdf.addImage(
+      frontPImage!,
+      "PNG",
+      3.375,
+      -1.25,
+      2.125,
+      3.375,
+      undefined,
+      "NONE",
+      90
+    );
     // pdf.addPage([880, 1400], "p");
     // pdf.addImage(backPmage!, "PNG", 0, 0, 880, 1400);
   }
@@ -483,18 +493,29 @@ export const printSingleIDCard = async (
 ) => {
   const pdf = new jsPDF({
     orientation: "landscape",
-    unit: "px",
-    format: [1400, 880],
+    unit: "in",
+    format: [3.375, 2.125],
   });
 
   // Add the front image to the first page
-  pdf.addImage(frontImage!, "PNG", 0, 0, 1400, 880);
+  pdf.addImage(frontImage!, "PNG", 0, 0, 3.375, 2.125);
   // pdf.addPage();
   // pdf.addImage(backImage, "PNG", 0, 0, 1400, 880);
 
   if (type !== "General") {
-    pdf.addPage([880, 1400], "p");
-    pdf.addImage(frontPImage!, "PNG", 0, 0, 880, 1400);
+    pdf.addPage([3.375, 2.125], "l");
+    pdf.addImage(
+      frontPImage!,
+      "PNG",
+      3.375,
+      -1.25,
+      2.125,
+      3.375,
+      undefined,
+      "NONE",
+      90
+    );
+
     // pdf.addPage([880, 1400], "p");
     // pdf.addImage(backPmage!, "PNG", 0, 0, 880, 1400);
   }
@@ -523,28 +544,35 @@ export const saveBatchIDCards = async (
     backP?: string;
   }[]
 ) => {
-  const pdf = new jsPDF(
-    idCards[0].type === "General" ? "landscape" : "portrait",
-    undefined,
-    idCards[0].type === "General" ? [1400, 880] : [880, 1400]
-  );
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "in",
+    format: [3.375, 2.125],
+  });
 
   idCards.forEach((card, index) => {
     if (card.type === "Executive") {
-      pdf.addPage([880, 1400], "portrait");
-      pdf.addImage(card.frontP!, "PNG", 0, 0, 880, 1400);
+      pdf.addImage(
+        card.frontP!,
+        "PNG",
+        3.375,
+        -1.25,
+        2.125,
+        3.375,
+        undefined,
+        "NONE",
+        90
+      );
       // pdf.addPage([880, 1400], "portrait");
       // pdf.addImage(card.backP!, "PNG", 0, 0, 880, 1400);
     }
-    pdf.addPage([1400, 880], "landscape");
-    pdf.addImage(card.front, "PNG", 0, 0, 1400, 880);
+    pdf.addPage();
+    pdf.addImage(card.front, "PNG", 0, 0, 3.375, 2.125);
 
     // pdf.addPage([1400, 880], "landscape");
     // pdf.addImage(card.back, "PNG", 0, 0, 1400, 880);
   });
-  if (pdf.getNumberOfPages() > 0) {
-    pdf.deletePage(1);
-  }
+
   pdf.save("Batch_ID_Cards_" + timestamp + ".pdf");
 };
 
@@ -557,28 +585,34 @@ export const printBatchIDCards = async (
     backP?: string;
   }[]
 ) => {
-  const pdf = new jsPDF(
-    idCards[0].type === "General" ? "landscape" : "portrait",
-    undefined,
-    idCards[0].type === "General" ? [1400, 880] : [880, 1400]
-  );
+  const pdf = new jsPDF({
+    orientation: "landscape",
+    unit: "in",
+    format: [3.375, 2.125],
+  });
 
   idCards.forEach((card, index) => {
     if (card.type === "Executive") {
-      pdf.addPage([880, 1400], "portrait");
-      pdf.addImage(card.frontP!, "PNG", 0, 0, 880, 1400);
+      pdf.addImage(
+        card.frontP!,
+        "PNG",
+        3.375,
+        -1.25,
+        2.125,
+        3.375,
+        undefined,
+        "NONE",
+        90
+      );
       // pdf.addPage([880, 1400], "portrait");
       // pdf.addImage(card.backP!, "PNG", 0, 0, 880, 1400);
     }
-    pdf.addPage([1400, 880], "landscape");
-    pdf.addImage(card.front, "PNG", 0, 0, 1400, 880);
+    pdf.addPage();
+    pdf.addImage(card.front, "PNG", 0, 0, 3.375, 2.125);
 
     // pdf.addPage([1400, 880], "landscape");
     // pdf.addImage(card.back, "PNG", 0, 0, 1400, 880);
   });
-  if (pdf.getNumberOfPages() > 0) {
-    pdf.deletePage(1);
-  }
 
   const pdfBlob = pdf.output("blob");
   const pdfUrl = URL.createObjectURL(pdfBlob);

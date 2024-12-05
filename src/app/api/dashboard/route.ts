@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { mongooseConnect } from "@/lib/mongoose"; // Adjust the import path as needed
 import Rider from "@/models/Rider"; // Adjust the import path as needed
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function GET() {
   await mongooseConnect();
@@ -8,6 +9,7 @@ export async function GET() {
   try {
     const totalRiders = await Rider.countDocuments();
     const printedCards = await Rider.countDocuments({ isPrinted: true });
+    const { data } = await (await clerkClient()).users.getUserList();
     const pendingPrinting = 500000 - printedCards; // Assuming 500,000 is the total target
     const ridersByDistrict = await Rider.aggregate([
       { $group: { _id: "$district", count: { $sum: 1 } } },
@@ -71,7 +73,7 @@ export async function GET() {
       totalRiders,
       printedCards,
       pendingPrinting,
-      totalUsers: 60,
+      totalUsers: data.length,
       ridersByDistrict,
       ageRangeDistribution,
     });

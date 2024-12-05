@@ -173,7 +173,7 @@ export default function IdCardDetail({
                 height={500}
                 width={500}
                 className=" w-2/4 rounded-md shadow-lg"
-                src={cardFront ? cardFront : "/frontbg.png"}
+                src={cardFront ? cardFront : "/loader.png"}
                 alt=""
               />
             </div>
@@ -184,7 +184,7 @@ export default function IdCardDetail({
                   height={500}
                   width={500}
                   className=" w-1/2 rounded-md shadow-lg"
-                  src={pcardFront ? pcardFront : "/frontbg.png"}
+                  src={pcardFront ? pcardFront : "/loader.png"}
                   alt=""
                 />
               </div>

@@ -74,9 +74,9 @@ export const RiderProvider: React.FC<{ children: ReactNode }> = ({
     setIsLoading(false);
   }, [currentPage]);
 
-  useEffect(() => {
-    fetchRiders();
-  }, [fetchRiders]);
+  // useEffect(() => {
+  //   fetchRiders();
+  // }, [fetchRiders]);
 
   const fetchPrintedRiders = useCallback(async () => {
     setIsLoading(true);
