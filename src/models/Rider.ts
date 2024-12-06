@@ -40,6 +40,10 @@ const RiderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+     imageId: {
+      type: String,
+      default: "",
+    },
     userId: {
       type: String,
       required: true,
