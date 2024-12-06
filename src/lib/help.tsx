@@ -454,7 +454,7 @@ export const saveSingleIDCard = async (
 ) => {
   const pdf = new jsPDF({
     orientation: "landscape",
-    unit: "px",
+    unit: "in",
     format: [3.375, 2.125],
   });
 
